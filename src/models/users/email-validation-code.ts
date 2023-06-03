@@ -1,9 +1,12 @@
 import crypto from "node:crypto";
 
 const VERIFICATION_CODE_LENGTH: number = 200;
-const testVerificationCodeRegexp = (value:string) => {
-    return new RegExp("^[0-9abcdef]{" + VERIFICATION_CODE_LENGTH + "}$").test(value)
-}
+
+const testVerificationCodeRegexp = (value: string) => {
+    return new RegExp("^[0-9abcdef]{" + VERIFICATION_CODE_LENGTH + "}$").test(
+        value
+    );
+};
 
 export class EmailValidationCode {
     public readonly value: string;
@@ -20,14 +23,16 @@ export class EmailValidationCode {
 
 function generateCode(): string {
     let chars = [];
-    for (let i = 0; i < VERIFICATION_CODE_LENGTH; i++) {
+    for (let i = 0; i < VERIFICATION_CODE_LENGTH / 2; i++) {
         chars.push(crypto.randomInt(15));
     }
-    return Buffer.from(chars).toString("hex").toLowerCase();
+    let code = Buffer.from(chars).toString("hex").toLowerCase();
+    debugger;
+    return code;
 }
 
 function isInvalid(value: string): boolean {
-    return !testVerificationCodeRegexp(value); 
+    return !testVerificationCodeRegexp(value);
 }
 
 export class InvalidEmailValidationCode extends Error {

@@ -11,3 +11,9 @@ test("should reject non integer values", () => {
         new UserID(1.1);
     }).toThrow();
 });
+
+test("should create a user id correctly", () => {
+    let userID = new UserID(123);
+
+    expect(userID.value).toBe(123);
+});
