@@ -59,3 +59,11 @@ test("to String works correctly", () => {
     debugger; // dateTime
     expect(dateTime.toString()).toBe("2023-01-02T03:04:05.006+00:00");
 });
+
+test("should DateTima.clode returns an equal object", () => {
+    let datetime = new DateTime(0);
+
+    let clone = datetime.clone();
+
+    expect(datetime.toString()).toBe(clone.toString())
+});

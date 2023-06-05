@@ -8,7 +8,6 @@ RUN apt-get -y install --no-install-recommends \
     git \
     curl \
     tmux \
-    neovim \
     ca-certificates 
 
 ARG USERNAME=developer
@@ -25,6 +24,9 @@ RUN ln -s /opt/node/bin/node /usr/local/bin/node
 RUN ln -s /opt/node/bin/npx /usr/local/bin/npx
 RUN ln -s /opt/node/bin/npm /usr/local/bin/npm
 RUN ln -s /opt/node/bin/corepack /usr/local/bin/corepack
+
+COPY build_and_install_neovim.sh build_and_install_neovim.sh
+RUN sh build_and_install_neovim.sh 
 
 USER ${UID}:${GID}
 

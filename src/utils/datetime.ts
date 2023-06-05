@@ -21,24 +21,30 @@ export class DateTime {
 
     constructor(arg?: number | DateObject) {
         if (typeof arg === "number") {
-            this.luxonDateTime = luxon.DateTime.fromMillis(arg);
-            return;
-        }
-
-        if (typeof arg === "object") {
-            this.luxonDateTime = luxon.DateTime.fromObject({
-                year: arg.year,
-                month: arg.month,
-                day: arg.day,
-                hour: arg.hour,
-                minute: arg.minute,
-                second: arg.second,
-                millisecond: arg.millisecond,
+            this.luxonDateTime = luxon.DateTime.fromMillis(arg, {
+                zone: "utc",
             });
             return;
         }
 
+        if (typeof arg === "object") {
+            this.luxonDateTime = luxon.DateTime.fromObject(
+                {
+                    year: arg.year,
+                    month: arg.month,
+                    day: arg.day,
+                    hour: arg.hour,
+                    minute: arg.minute,
+                    second: arg.second,
+                    millisecond: arg.millisecond,
+                },
+                { zone: "utc" }
+            );
+            return;
+        }
+
         this.luxonDateTime = luxon.DateTime.now();
+        this.luxonDateTime.setZone("utc");
     }
 
     get year(): number {
@@ -73,7 +79,11 @@ export class DateTime {
         return this.luxonDateTime.toMillis();
     }
 
+    clone(): DateTime {
+        return new DateTime(this.toMilliseconds());
+    }
+
     toString(): string {
-        return this.luxonDateTime.toString();
+        return this.luxonDateTime.toFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
     }
 }

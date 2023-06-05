@@ -1,3 +1,1 @@
-import { hello } from "@app/hello";
-
-console.log(hello());
+console.log("Hello World!");

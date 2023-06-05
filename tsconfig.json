@@ -8,7 +8,10 @@
         "rootDir": "./",
         "baseUrl": "./",
         "paths": {
-            "@app/*": ["src/*", "dist/src/*"]
+            "@utils/*": ["src/utils/*", "dist/src/utils/*"],
+            "@domain/*": ["src/domain/*", "dist/src/domain/*"],
+            "@application/*": ["src/application/*", "dist/src/application/*"],
+            "@infra/*": ["src/infra/*", "dist/src/infra/*"]
         },
         "sourceMap": true,
         "outDir": "./dist",
