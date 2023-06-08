@@ -83,7 +83,15 @@ export class DateTime {
         return new DateTime(this.toMilliseconds());
     }
 
+    static fromDate(date: Date): DateTime {
+        return new DateTime(luxon.DateTime.fromJSDate(date).toMillis());
+    }
+
     toString(): string {
         return this.luxonDateTime.toFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZZ");
+    }
+
+    add(milliseconds: number): DateTime {
+        return new DateTime(this.toMilliseconds() + milliseconds);
     }
 }

@@ -1,31 +1,28 @@
 import { EmailID } from "./email-id";
 import { EmailAddress } from "./email-address";
 import { EmailValidationCode } from "./email-validation-code";
-import { DateTime } from "@utils/datetime";
 
 type EmailConstructorArgs = {
     id: EmailID;
     address: EmailAddress;
-    token: EmailValidationCode | null;
-    validated: boolean;
-    created: DateTime;
-    deleted: DateTime | null;
+    code?: EmailValidationCode | null;
+    validated?: boolean;
 };
 
 export class Email {
     public id: EmailID;
     public address: EmailAddress;
-    public token: EmailValidationCode | null;
+    public code: EmailValidationCode | null;
     public validated: boolean;
-    public created: DateTime;
-    public deleted: DateTime | null;
 
     constructor(args: EmailConstructorArgs) {
         this.id = args.id;
         this.address = args.address;
-        this.token = args.token;
-        this.validated = args.validated;
-        this.created = args.created;
-        this.deleted = args.deleted;
+        this.code = args.code == undefined ? null : args.code;
+        this.validated = args.validated == undefined ? false : args.validated;
+    }
+
+    generateCode() {
+        this.code = EmailValidationCode.generate();
     }
 }

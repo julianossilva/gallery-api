@@ -10,7 +10,6 @@ import {
 } from "@domain/model/users";
 import { HashService } from "@application/hash-service";
 import { Password } from "./password";
-import { DateTime } from "@utils/datetime";
 import { PublicInterface } from "@utils/types";
 import { uuidV4 } from "@utils/uuid";
 
@@ -22,7 +21,7 @@ export class UsernameAlreadyRegisteredError extends Error {}
 
 export class SessionNotFoundError extends Error {}
 
-export class AuthService {
+export class AuthServiceImpl {
     private userRepository: UserRepository;
     private sessionService: SessionService;
     private hashService: HashService;
@@ -63,19 +62,17 @@ export class AuthService {
         let usernameObj = new Username(username);
         let emailAddressObj = new EmailAddress(email);
         let passwordObj = new Password(password);
-        let now = new DateTime();
 
         let emailAlreadyUsed =
             await this.userRepository.hasUserWithEmailAddress(emailAddressObj);
         if (emailAlreadyUsed) throw new EmailAlreadyRegisteredError();
+
         let emailObj = new Email({
             id: new EmailID(uuidV4()),
             address: emailAddressObj,
-            token: null,
-            validated: false,
-            created: now.clone(),
-            deleted: null,
         });
+
+        emailObj.generateCode();
 
         let usernameAlreadyRegistered =
             await this.userRepository.hasUserWithUsername(usernameObj);
@@ -87,10 +84,7 @@ export class AuthService {
             id: new UserID(uuidV4()),
             username: usernameObj,
             email: emailObj,
-            newEmail: null,
             passwordHash: hash,
-            created: now.clone(),
-            deleted: null,
         });
 
         await this.userRepository.create(user);
@@ -107,4 +101,4 @@ export class AuthService {
     }
 }
 
-export type IAuthService = PublicInterface<AuthService>;
+export type AuthService = PublicInterface<AuthServiceImpl>;

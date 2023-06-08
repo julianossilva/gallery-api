@@ -11,7 +11,8 @@
             "@utils/*": ["src/utils/*", "dist/src/utils/*"],
             "@domain/*": ["src/domain/*", "dist/src/domain/*"],
             "@application/*": ["src/application/*", "dist/src/application/*"],
-            "@infra/*": ["src/infra/*", "dist/src/infra/*"]
+            "@infra/*": ["src/infra/*", "dist/src/infra/*"],
+            "@main/*": ["src/main/*", "dist/src/main/*"]
         },
         "sourceMap": true,
         "outDir": "./dist",

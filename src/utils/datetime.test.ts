@@ -65,5 +65,5 @@ test("should DateTima.clode returns an equal object", () => {
 
     let clone = datetime.clone();
 
-    expect(datetime.toString()).toBe(clone.toString())
+    expect(datetime.toString()).toBe(clone.toString());
 });
