@@ -1,32 +1,34 @@
-import crypto from 'node:crypto'
-import { cleanDatabase } from "@main/clean-database"
-import { SessionServicePrisma } from "./session-service-prisma"
+import crypto from "node:crypto";
+import { cleanDatabase } from "@main/clean-database";
+import { SessionServicePrisma } from "./session-service-prisma";
 import { PrismaClient } from "@prisma/client";
 import { UserRepository } from "@domain/repository/users";
 import { UserRepositoryPrisma } from "@infra/repository/prisma/user-repository";
-import { UserID } from '@domain/model/users';
+import { UserID } from "@domain/model/users";
 
 let prismaClient: PrismaClient;
 let sessionService: SessionServicePrisma;
 beforeEach(async () => {
-    await cleanDatabase()
+    await cleanDatabase();
 
-    prismaClient = new PrismaClient()
-    sessionService = new SessionServicePrisma(prismaClient, "shhh")
-})
+    prismaClient = new PrismaClient();
+    sessionService = new SessionServicePrisma(prismaClient, "shhh");
+});
 
 test("should create a session and retrieve", async () => {
+    let userID = crypto.randomUUID();
 
-    let userID = crypto.randomUUID()
-
-    let session = await sessionService.create(new UserID(userID))
-    let token = session.getToken()
-
+    let session = await sessionService.create(new UserID(userID));
+    let token = session.getToken();
 
     let retrievedSession = await sessionService.find(token);
 
-    expect(session.getId()).toBe(retrievedSession?.getId())
-    expect(session.getCurrentUserID().value).toBe(retrievedSession?.getCurrentUserID().value)
-    expect(session.getExpiration().toMilliseconds()).toBe(retrievedSession?.getExpiration().toMilliseconds())
-    expect(session.getToken()).toBe(retrievedSession?.getToken())
-})
+    expect(session.getId()).toBe(retrievedSession?.getId());
+    expect(session.getCurrentUserID().value).toBe(
+        retrievedSession?.getCurrentUserID().value
+    );
+    expect(session.getExpiration().toMilliseconds()).toBe(
+        retrievedSession?.getExpiration().toMilliseconds()
+    );
+    expect(session.getToken()).toBe(retrievedSession?.getToken());
+});

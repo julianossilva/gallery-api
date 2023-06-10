@@ -1,13 +1,12 @@
 import express from "express";
 import authRoutes from "@main/routes/auth";
+import uploadRoutes from "@main/routes/upload";
 import { AuthService, AuthServiceImpl } from "@application/auth-service";
 import { UserRepository } from "@domain/repository/users";
 import { UserRepositoryPrisma } from "@infra/repository/prisma/user-repository";
 import { PrismaClient } from "@prisma/client";
 import { SessionService } from "@application/session-service";
-import {
-    SessionServicePrisma,
-} from "@infra/session/prisma/session-service-prisma";
+import { SessionServicePrisma } from "@infra/session/prisma/session-service-prisma";
 import { HashServiceBcrypt } from "@infra/hash-service/hash-service-bcrypt";
 import { HashService } from "@application/hash-service";
 
@@ -38,6 +37,7 @@ export async function createApp(): Promise<
     );
 
     app.use(authRoutes(authService));
+    app.use(uploadRoutes());
 
     let shutdown = async () => {
         await prismaClient.$disconnect();

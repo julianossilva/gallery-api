@@ -40,5 +40,5 @@ test("should register a new user", async () => {
         .send();
     expect(res.status).toBe(200);
     expect(res.body.username).toBe("ana");
-    expect(res.body.email).toBe("ana@email.com")
+    expect(res.body.email).toBe("ana@email.com");
 }, 30000);
