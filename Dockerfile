@@ -7,6 +7,7 @@ RUN apt-get update
 RUN apt-get -y install --no-install-recommends \
     git \
     curl \
+    less \
     tmux \
     ca-certificates 
 

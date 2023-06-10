@@ -29,8 +29,8 @@ model Email {
 }
 
 model Session {
-  id     String @id @db.Uuid
-  token  String @unique @db.VarChar(255)
-  userID String @db.Uuid
-  expiration DateTime @db.Timestamp(6)
+  id            String   @id @db.Uuid
+  unsignedToken String   @unique @db.VarChar(255)
+  userID        String   @db.Uuid
+  expiration    DateTime @db.Timestamp(6)
 }

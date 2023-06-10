@@ -11,20 +11,23 @@ import crypto from "node:crypto";
 export type SessionPrismaArgs = {
     id: string;
     userID: UserID;
-    token: string;
+    unsignedToken: string;
+    tag: string;
     expiration: DateTime;
 };
 
 export class SessionPrisma implements Session {
     private id: string;
     private userID: UserID;
-    private token: string;
+    private unsignedToken: string;
+    private tag: string;
     private expiration: DateTime;
 
     constructor(args: SessionPrismaArgs) {
         this.id = args.id;
         this.userID = args.userID;
-        this.token = args.token;
+        this.unsignedToken = args.unsignedToken;
+        this.tag = args.tag;
         this.expiration = args.expiration;
     }
 
@@ -35,7 +38,7 @@ export class SessionPrisma implements Session {
         return this.userID;
     }
     getToken(): string {
-        return this.token;
+        return `${this.unsignedToken}.${this.tag}`;
     }
     getExpiration(): DateTime {
         return this.expiration;
@@ -45,30 +48,19 @@ export class SessionPrisma implements Session {
 export class SessionServicePrisma implements SessionService {
     private sessionStorage: SessionStorage;
 
-    constructor(
-        sessionStorage: SessionStorage
-    ) {
-        this.sessionStorage = sessionStorage;
+    constructor(prismaClient: PrismaClient, appSecret: string) {
+        this.sessionStorage = new SessionStorage(prismaClient, appSecret);
     }
 
     async create(userID: UserID): Promise<Session> {
         try {
-            let id = crypto.randomUUID();
-            let token = generateToken();
-            let expiration = new DateTime().add(30 * DAY);
-
-            return new SessionPrisma({
-                id,
-                userID,
-                token,
-                expiration,
-            });
+            return await this.sessionStorage.create(userID);
         } catch (e) {
             throw new SessionError();
         }
     }
 
-    async find(token: string): Promise<Session|null> {
+    async find(token: string): Promise<Session | null> {
         try {
             return await this.sessionStorage.findByToken(token);
         } catch (e) {
@@ -85,20 +77,41 @@ export class SessionServicePrisma implements SessionService {
     }
 }
 
-function generateToken(): string {
-    return crypto.randomBytes(100).toString("base64url");
-}
-
-export class SessionStorage {
+class SessionStorage {
     private prismaClient: PrismaClient;
+    private appSecret: string;
 
-    constructor(prismaClient: PrismaClient) {
+    constructor(prismaClient: PrismaClient, appSecret: string) {
         this.prismaClient = prismaClient;
+        this.appSecret = appSecret;
+    }
+
+    async create(userID: UserID): Promise<Session> {
+        let id = crypto.randomUUID();
+        let unsignedToken = generateToken();
+        let expiration = new DateTime().add(30 * DAY);
+
+        await this.prismaClient.session.create({
+            data: {
+                id,
+                userID: userID.value,
+                unsignedToken,
+                expiration: expiration.toString(),
+            },
+        });
+
+        return new SessionPrisma({
+            id,
+            userID,
+            unsignedToken,
+            tag: generateTag(unsignedToken, this.appSecret),
+            expiration,
+        });
     }
 
     async findByToken(token: string): Promise<Session | null> {
         let sessionData = await this.prismaClient.session.findUnique({
-            where: { token: token },
+            where: { unsignedToken: getUnsignedPart(token) },
         });
 
         if (sessionData == null) return null;
@@ -106,7 +119,8 @@ export class SessionStorage {
         return new SessionPrisma({
             id: sessionData.id,
             userID: new UserID(sessionData.userID),
-            token: sessionData.token,
+            unsignedToken: sessionData.unsignedToken,
+            tag: generateTag(sessionData.unsignedToken, this.appSecret),
             expiration: DateTime.fromDate(sessionData.expiration),
         });
     }
@@ -118,4 +132,21 @@ export class SessionStorage {
             },
         });
     }
+}
+
+function generateTag(token: string, secret: string): string {
+    return crypto
+        .createHmac("SHA256", secret)
+        .update(token)
+        .digest("base64url");
+}
+
+function getUnsignedPart(token: string): string {
+    let parts = token.split(".");
+
+    return parts[0] ?? "";
+}
+
+function generateToken(): string {
+    return crypto.randomBytes(100).toString("base64url");
 }

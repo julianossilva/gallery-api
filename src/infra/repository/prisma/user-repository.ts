@@ -18,6 +18,36 @@ export class UserRepositoryPrisma implements UserRepository {
         this.prismaClient = prismaClient;
     }
 
+    async find(userID: UserID): Promise<User | null> {
+        try {
+            let userData = await this.prismaClient.user.findUnique({
+                include: { email: true },
+                where: {
+                    id: userID.value,
+                },
+            });
+
+            if (userData == null) return null;
+
+            return new User({
+                id: new UserID(userData.id),
+                username: new Username(userData.username),
+                passwordHash: new PasswordHash(userData.passwordHash),
+                email: new Email({
+                    id: new EmailID(userData.email.id),
+                    address: new EmailAddress(userData.email.address),
+                    code:
+                        userData.email.code == null
+                            ? null
+                            : new EmailValidationCode(userData.email.code),
+                    validated: userData.email.validated,
+                }),
+            });
+        } catch (e) {
+            throw new UserRepositoryError();
+        }
+    }
+
     async findByUsername(username: Username): Promise<User | null> {
         try {
             let userData = await this.prismaClient.user.findUnique({

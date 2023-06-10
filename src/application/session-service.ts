@@ -12,6 +12,6 @@ export interface Session {
 
 export interface SessionService {
     create(userID: UserID): Promise<Session>;
-    find(token: string): Promise<Session|null>;
+    find(token: string): Promise<Session | null>;
     delete(session: Session): Promise<void>;
 }

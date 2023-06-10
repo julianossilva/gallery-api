@@ -1,4 +1,4 @@
-import { Username, User, EmailAddress } from "@domain/model/users";
+import { Username, User, EmailAddress, UserID } from "@domain/model/users";
 
 export class UserRepositoryError extends Error {
     constructor() {
@@ -8,6 +8,7 @@ export class UserRepositoryError extends Error {
 
 export interface UserRepository {
     findByUsername(username: Username): Promise<User | null>;
+    find(userID: UserID): Promise<User | null>;
     create(user: User): Promise<void>;
 
     hasUserWithEmailAddress(address: EmailAddress): Promise<boolean>;

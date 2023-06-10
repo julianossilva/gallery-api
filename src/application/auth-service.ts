@@ -21,6 +21,12 @@ export class UsernameAlreadyRegisteredError extends Error {}
 
 export class SessionNotFoundError extends Error {}
 
+type UserData = {
+    id: string;
+    username: string;
+    email: string;
+};
+
 export class AuthServiceImpl {
     private userRepository: UserRepository;
     private sessionService: SessionService;
@@ -34,6 +40,22 @@ export class AuthServiceImpl {
         this.userRepository = userRepository;
         this.sessionService = sessionService;
         this.hashService = hashService;
+    }
+
+    async user(token: string): Promise<UserData | null> {
+        let session = await this.sessionService.find(token);
+
+        if (session == null) throw new SessionNotFoundError();
+
+        let user = await this.userRepository.find(session.getCurrentUserID());
+
+        if (user == null) throw new UserNotFoundError();
+
+        return {
+            id: user.id.value,
+            username: user.username.value,
+            email: user.email.address.value,
+        };
     }
 
     async signIn(username: string, password: string): Promise<string> {
@@ -65,6 +87,7 @@ export class AuthServiceImpl {
 
         let emailAlreadyUsed =
             await this.userRepository.hasUserWithEmailAddress(emailAddressObj);
+
         if (emailAlreadyUsed) throw new EmailAlreadyRegisteredError();
 
         let emailObj = new Email({
@@ -76,10 +99,12 @@ export class AuthServiceImpl {
 
         let usernameAlreadyRegistered =
             await this.userRepository.hasUserWithUsername(usernameObj);
+
         if (usernameAlreadyRegistered)
             throw new UsernameAlreadyRegisteredError();
 
         let hash = await this.hashService.hash(passwordObj);
+
         let user = new User({
             id: new UserID(uuidV4()),
             username: usernameObj,
@@ -88,6 +113,7 @@ export class AuthServiceImpl {
         });
 
         await this.userRepository.create(user);
+        // send validation code!
     }
 
     async logout(token: string): Promise<void> {

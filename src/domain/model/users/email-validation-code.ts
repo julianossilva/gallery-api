@@ -27,7 +27,6 @@ function generateCode(): string {
         chars.push(crypto.randomInt(15));
     }
     let code = Buffer.from(chars).toString("hex").toLowerCase();
-    debugger;
     return code;
 }
 

@@ -1,4 +1,4 @@
-import { AuthService } from "@application/auth-service";
+import { AuthService, UserNotFoundError } from "@application/auth-service";
 import { assertEmail, assertPassword, assertUsername } from "@utils/assertions";
 import { Router, Request, Response } from "express";
 
@@ -22,7 +22,8 @@ const routes = (authService: AuthService) => {
         }
 
         try {
-            return await authService.signUp(username, email, password);
+            await authService.signUp(username, email, password);
+            res.status(201).send();
         } catch (e) {
             res.status(500).send();
         }
@@ -43,7 +44,10 @@ const routes = (authService: AuthService) => {
         }
 
         try {
-            return await authService.signIn(username, password);
+            let token = await authService.signIn(username, password);
+            res.status(200).send({
+                token,
+            });
         } catch (e) {
             res.status(500).send();
         }
@@ -66,6 +70,25 @@ const routes = (authService: AuthService) => {
             res.status(500).send();
         }
     });
+
+    r.get("/profile", async (req: Request, res: Response) => {
+        let token: string;
+
+        try {
+            token = req.header("Authorization") ?? "";
+        } catch (e) {
+            res.status(400).send();
+            return;
+        }
+
+        try {
+            let user = await authService.user(token);
+            res.status(200).send(user);
+        } catch (e) {
+            res.status(500).send();
+        }
+    });
+
     return r;
 };
 
