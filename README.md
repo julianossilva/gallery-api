@@ -35,4 +35,6 @@ execute **dev.sh** to start containers and attach a shell.
 - **rebuild_containers.sh**: rebuild all containers.
 - **remove_containers.sh**: remove all containers.
 
-###
+### Before start
+Access minio and add credentials (ACCESS_KEY and SECRET_KEY).
+Create a bucket too.
