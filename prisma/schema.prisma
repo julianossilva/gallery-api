@@ -34,3 +34,9 @@ model Session {
   userID        String   @db.Uuid
   expiration    DateTime @db.Timestamp(6)
 }
+
+model Wallpaper {
+  id    String @id @db.Uuid
+  owner String @db.Uuid
+  name  String @unique
+}

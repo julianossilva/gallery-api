@@ -2,6 +2,7 @@ import { createApp } from "@main/app";
 import { cleanDatabase } from "@main/clean-database";
 import request from "supertest";
 import express from "express";
+import 'dotenv/config'
 
 let app: express.Application;
 let shutdownFunc: () => Promise<void>;

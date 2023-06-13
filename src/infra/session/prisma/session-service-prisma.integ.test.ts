@@ -2,9 +2,8 @@ import crypto from "node:crypto";
 import { cleanDatabase } from "@main/clean-database";
 import { SessionServicePrisma } from "./session-service-prisma";
 import { PrismaClient } from "@prisma/client";
-import { UserRepository } from "@domain/repository/users";
-import { UserRepositoryPrisma } from "@infra/repository/prisma/user-repository";
 import { UserID } from "@domain/model/users";
+import 'dotenv/config'
 
 let prismaClient: PrismaClient;
 let sessionService: SessionServicePrisma;

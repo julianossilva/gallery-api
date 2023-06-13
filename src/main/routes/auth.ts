@@ -1,8 +1,8 @@
-import { AuthService, UserNotFoundError } from "@application/auth-service";
+import { AuthServiceFactory } from "@main/factory/services/auth-service-factory";
 import { assertEmail, assertPassword, assertUsername } from "@utils/assertions";
 import { Router, Request, Response } from "express";
 
-const routes = (authService: AuthService) => {
+const routes = (authServiceFactory: AuthServiceFactory) => {
     let r = Router();
 
     r.post("/signup", async (req: Request, res: Response) => {
@@ -22,7 +22,7 @@ const routes = (authService: AuthService) => {
         }
 
         try {
-            await authService.signUp(username, email, password);
+            await authServiceFactory.create().signUp(username, email, password);
             res.status(201).send();
         } catch (e) {
             res.status(500).send();
@@ -44,7 +44,9 @@ const routes = (authService: AuthService) => {
         }
 
         try {
-            let token = await authService.signIn(username, password);
+            let token = await authServiceFactory
+                .create()
+                .signIn(username, password);
             res.status(200).send({
                 token,
             });
@@ -64,7 +66,7 @@ const routes = (authService: AuthService) => {
         }
 
         try {
-            await authService.logout(token);
+            await authServiceFactory.create().logout(token);
             res.status(200).send();
         } catch (e) {
             res.status(500).send();
@@ -82,7 +84,7 @@ const routes = (authService: AuthService) => {
         }
 
         try {
-            let user = await authService.user(token);
+            let user = await authServiceFactory.create().user(token);
             res.status(200).send(user);
         } catch (e) {
             res.status(500).send();
