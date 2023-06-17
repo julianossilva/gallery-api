@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "build": "tsc && prisma generate",
+        "migrate:dev": "prisma generate && prisma migrate dev",
         "start": "node -r tsconfig-paths/register dist/src/main/index.js",
         "test": "jest --runInBand",
         "test:debug": "node inspect -r tsconfig-paths/register ./node_modules/.bin/jest",
