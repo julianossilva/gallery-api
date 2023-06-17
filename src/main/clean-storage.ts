@@ -1,10 +1,11 @@
 import {BucketItem, BucketStream, Client} from "minio"
 
+const MINIO_HOST = process.env.MINIO_HOST ?? ""
+const MINIO_BUCKET = process.env.MINIO_BUCKET ?? ""
+const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY ?? "";
+const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY ?? "";
+
 export async function cleanStorage() {
-    const MINIO_HOST = process.env.MINIO_HOST ?? ""
-    const MINIO_BUCKET = process.env.MINIO_BUCKET ?? ""
-    const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY ?? "";
-    const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY ?? "";
 
     let minioClient = new Client({
         endPoint: MINIO_HOST,
@@ -18,7 +19,7 @@ export async function cleanStorage() {
 
         let objs = await new Promise<BucketItem[]>((res, rej)=> {
             let data: BucketItem[] = []
-            let stream:BucketStream<BucketItem> =  minioClient.listObjects('wallpapers')
+            let stream:BucketStream<BucketItem> =  minioClient.listObjects(MINIO_BUCKET)
             stream.on('data', (obj)=> { data.push(obj) } )
             stream.on("end",  () =>{ res(data) })
             stream.on('error', (err) =>{ rej(err) } )
@@ -52,7 +53,7 @@ const police =`
                 "s3:ListBucket"
             ],
             "Resource": [
-                "arn:aws:s3:::wallpapers"
+                "arn:aws:s3:::${MINIO_BUCKET}"
             ]
         },
         {
@@ -66,7 +67,7 @@ const police =`
                 "s3:GetObject"
             ],
             "Resource": [
-                "arn:aws:s3:::wallpapers/*"
+                "arn:aws:s3:::${MINIO_BUCKET}/*"
             ]
         }
     ]

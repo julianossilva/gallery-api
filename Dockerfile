@@ -26,17 +26,8 @@ RUN ln -s /opt/node/bin/npx /usr/local/bin/npx
 RUN ln -s /opt/node/bin/npm /usr/local/bin/npm
 RUN ln -s /opt/node/bin/corepack /usr/local/bin/corepack
 
-COPY build_and_install_neovim.sh build_and_install_neovim.sh
-RUN sh build_and_install_neovim.sh 
-
 USER ${UID}:${GID}
 
-RUN echo "set-option -g default-shell /bin/bash" >> ~/.tmux.conf
-
 WORKDIR /home/${USERNAME}/.config 
-
-RUN git clone https://github.com/julianossilva/nvim.git
-
-RUN sh ./nvim/install_ext.sh
 
 WORKDIR /home/${USERNAME}/app 

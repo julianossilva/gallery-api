@@ -1,0 +1,15 @@
+{
+    "name": "Gallery API",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/home/developer/app",
+    "shutdownAction": "stopCompose",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "Prisma.prisma",
+                "firsttris.vscode-jest-runner"
+            ]
+        }
+    }
+}
