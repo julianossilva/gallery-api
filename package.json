@@ -7,6 +7,8 @@
         "build": "tsc && prisma generate",
         "migrate:dev": "prisma generate && prisma migrate dev",
         "start": "node -r tsconfig-paths/register dist/src/main/index.js",
+        "prestart:dev": "npm run build && npx prisma migrate dev",
+        "start:dev": "node -r tsconfig-paths/register dist/src/main/index.js",
         "test": "jest --runInBand",
         "test:debug": "node inspect -r tsconfig-paths/register ./node_modules/.bin/jest",
         "fmt": "prettier --write src && prisma format",
