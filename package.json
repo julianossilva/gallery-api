@@ -5,14 +5,15 @@
     "main": "index.js",
     "scripts": {
         "build": "tsc && prisma generate",
-        "migrate:dev": "prisma generate && prisma migrate dev",
         "start": "node -r tsconfig-paths/register dist/src/main/index.js",
-        "prestart:dev": "npm run build && npx prisma migrate dev",
-        "start:dev": "node -r tsconfig-paths/register dist/src/main/index.js",
+        "prestart:dev": "npm run build && npm run migrate:dev && npm run minio:setup",
+        "start:dev": "npm start",
         "test": "jest --runInBand",
         "test:debug": "node inspect -r tsconfig-paths/register ./node_modules/.bin/jest",
         "fmt": "prettier --write src && prisma format",
-        "clean:database": "ts-node src/commands/clean-database.ts"
+        "migrate:dev": "prisma generate && prisma migrate dev",
+        "clean:database": "ts-node src/commands/clean-database.ts",
+        "minio:setup": "ts-node src/commands/setup-minio.ts"
     },
     "author": "Juliano Soares da Silva",
     "license": "MIT",
